@@ -1,0 +1,637 @@
+:root {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #263e34;
+  background: #f6f5ef;
+  font-synthesis: none;
+  font-weight: 400;
+  line-height: 1.6;
+  font-size: 16px;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+button,
+input,
+select {
+  font: inherit;
+}
+button,
+a,
+label.file-label {
+  -webkit-tap-highlight-color: transparent;
+}
+button {
+  cursor: pointer;
+  color: inherit;
+}
+button:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+.file-label:focus-within {
+  outline: 3px solid #aa662e;
+  outline-offset: 4px;
+}
+button {
+  border: 0;
+}
+header {
+  max-width: 960px;
+  margin: auto;
+  padding: 28px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #dfe3d9;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: inherit;
+  font-size: 23px;
+  letter-spacing: -1px;
+}
+.brand b {
+  font-weight: 400;
+  color: #718077;
+}
+.brandmark {
+  display: inline-grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  background: #263e34;
+  color: #fff;
+  border-radius: 14px;
+  font-size: 24px;
+  letter-spacing: 0;
+}
+.status {
+  font-size: 12px;
+  color: #5b6c60;
+  display: flex;
+  gap: 7px;
+  align-items: center;
+}
+.status i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #7b976c;
+}
+main {
+  max-width: 800px;
+  margin: auto;
+  padding: 44px 32px 140px;
+}
+.eyebrow {
+  font-size: 10px;
+  letter-spacing: 2px;
+  font-weight: 700;
+  color: #607359;
+}
+h1 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(36px, 6vw, 55px);
+  font-weight: 400;
+  line-height: 1.12;
+  letter-spacing: -1.8px;
+  margin: 18px 0;
+}
+h1 em {
+  font-style: normal;
+  color: #7b8b6c;
+}
+h2 {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: -0.4px;
+  margin: 12px 0;
+}
+p {
+  margin: 12px 0;
+  color: #59685d;
+}
+.intro {
+  font-size: 16px;
+  line-height: 1.8;
+  margin-bottom: 30px;
+}
+.hero {
+  background: #e5ebd9;
+  border: 1px solid #d9e2ca;
+  padding: 30px;
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.hero h2 {
+  max-width: 270px;
+  font-size: 26px;
+  font-family: Georgia, serif;
+  font-weight: 400;
+}
+.hero p {
+  font-size: 13px;
+}
+.primary,
+.secondary {
+  display: inline-flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  padding: 13px 20px;
+  min-height: 48px;
+  font-weight: 600;
+  font-size: 14px;
+}
+.primary {
+  background: #263e34;
+  color: white;
+}
+.primary span {
+  margin-left: 12px;
+}
+.secondary {
+  background: #f3f4ed;
+  border: 1px solid #d8decf;
+}
+.tile-art {
+  width: 150px;
+  flex-shrink: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  transform: rotate(-7deg);
+}
+.tile-art span {
+  width: 64px;
+  height: 74px;
+  background: #fbfcf5;
+  display: grid;
+  place-items: center;
+  font-size: 40px;
+  border-radius: 12px;
+  box-shadow: 0 6px 0 #ccd5bc;
+}
+.tile-art span:nth-child(2) {
+  transform: translateY(16px) rotate(12deg);
+}
+.tile-art small {
+  font-size: 9px;
+  letter-spacing: 4px;
+  width: 100%;
+  text-align: center;
+  margin-top: 18px;
+  transform: rotate(7deg);
+}
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 26px 0 10px;
+}
+.section-head span {
+  font-size: 12px;
+  color: #697763;
+}
+.path {
+  border: 1px solid #dfe2d6;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #fbfcf7;
+}
+.lesson-row {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  text-align: left;
+  gap: 18px;
+  background: transparent;
+  padding: 20px;
+  border-bottom: 1px solid #e4e7dc;
+}
+.lesson-row:last-child {
+  border-bottom: 0;
+}
+.lesson-row:enabled:hover {
+  background: #edf1e5;
+}
+.number {
+  font-size: 12px;
+  width: 36px;
+  height: 36px;
+  border: 1px solid #d8dfcc;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.number.done {
+  background: #e1e9d3;
+}
+.lesson-row strong {
+  font-size: 15px;
+  font-weight: 600;
+}
+.lesson-row small,
+.word-row small {
+  display: block;
+  font-size: 12px;
+  color: #697763;
+  margin-top: 3px;
+}
+.arrow {
+  margin-left: auto;
+  font-size: 13px;
+}
+.tip {
+  display: flex;
+  gap: 15px;
+  margin-top: 22px;
+  font-size: 12px;
+}
+.tip > span {
+  font-size: 25px;
+  color: #85956e;
+}
+.tip b {
+  font-weight: 600;
+}
+.tip p {
+  margin: 0;
+}
+.flashcard,
+.panel {
+  padding: 28px;
+  border: 1px solid #dfe2d6;
+  border-radius: 22px;
+  background: #fffef9;
+  margin: 20px 0;
+}
+.flashcard {
+  text-align: center;
+  min-height: 360px;
+  box-shadow: 0 10px 30px #25392a05;
+}
+.hangul {
+  font-size: clamp(60px, 16vw, 96px);
+  font-weight: 500;
+  line-height: 1.5;
+  margin: 20px 0;
+  overflow-wrap: anywhere;
+}
+.flashcard h2 {
+  font-size: 23px;
+  overflow-wrap: anywhere;
+}
+.flashcard p {
+  font-size: 14px;
+}
+.muted,
+.footnote {
+  font-size: 13px;
+  color: #697763;
+}
+.footnote {
+  text-align: center;
+  margin: 24px 0;
+}
+.review-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #66745c;
+}
+.reveal {
+  display: flex;
+  width: 100%;
+  margin-top: 35px;
+}
+.ratings {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.rating {
+  padding: 12px 3px;
+  min-height: 62px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.rating small {
+  display: block;
+  font-size: 11px;
+  font-weight: 400;
+  margin-top: 4px;
+}
+.rating-0 {
+  background: #f7e4dd;
+  color: #814836;
+}
+.rating-1 {
+  background: #f4edcf;
+  color: #746130;
+}
+.rating-2 {
+  background: #e0eacb;
+  color: #425a34;
+}
+.rating-3 {
+  background: #dcece6;
+  color: #345c50;
+}
+.text-button {
+  min-height: 44px;
+  padding: 8px 10px;
+  background: transparent;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  font-size: 13px;
+}
+.lesson-copy {
+  font-size: 15px;
+}
+.small-title {
+  font-size: 36px;
+}
+.lesson-controls,
+.button-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+.lesson-controls > * {
+  flex: 1;
+}
+.choices {
+  display: grid;
+  gap: 12px;
+}
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 30px 0;
+}
+.stats div {
+  background: #e8eddc;
+  padding: 20px 10px;
+  border-radius: 16px;
+  text-align: center;
+}
+.stats b {
+  font-size: 32px;
+  font-family: Georgia, serif;
+  font-weight: 400;
+  display: block;
+}
+.stats span {
+  font-size: 11px;
+}
+.setting {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  font-size: 14px;
+}
+select,
+input {
+  border: 1px solid #cfd6c5;
+  border-radius: 10px;
+  padding: 12px;
+  background: #fffef9;
+  color: #263e34;
+  min-height: 48px;
+  font-size: 16px;
+}
+.word-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #e5e7df;
+  padding: 10px 0;
+  gap: 12px;
+  overflow-wrap: anywhere;
+}
+.word-row b {
+  font-size: 20px;
+}
+.panel > .section-head {
+  margin-top: 0;
+}
+.panel p {
+  font-size: 14px;
+}
+.file-label {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+.file-label input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  width: 100%;
+  cursor: pointer;
+}
+.empty {
+  text-align: center;
+}
+.empty-symbol {
+  font-size: 44px;
+  color: #87976e;
+}
+.notice {
+  background: #eee7d3;
+  padding: 14px 16px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  font-size: 13px;
+  margin-bottom: 20px;
+}
+.notice button {
+  background: transparent;
+  min-width: 44px;
+  min-height: 44px;
+}
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: #17271ee0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  padding: 20px;
+  overflow: auto;
+}
+.modal {
+  background: #f9faf3;
+  border-radius: 22px;
+  max-width: 460px;
+  width: 100%;
+  padding: 28px;
+  max-height: 90dvh;
+  overflow: auto;
+}
+.modal label {
+  display: block;
+  font-size: 13px;
+  margin: 14px 0;
+}
+.modal input {
+  display: block;
+  width: 100%;
+  margin-top: 5px;
+}
+.modal h2 {
+  margin-top: 0;
+}
+nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  background: #f9faf5f5;
+  border-top: 1px solid #dce1d3;
+  backdrop-filter: blur(16px);
+  padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+  z-index: 5;
+}
+nav button {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  width: 160px;
+  min-height: 54px;
+  border-radius: 12px;
+  background: transparent;
+  color: #687661;
+  font-size: 11px;
+}
+nav button > span {
+  font-size: 23px;
+  line-height: 1.35;
+}
+nav button[aria-current] {
+  background: #e6ecdc;
+  color: #263e34;
+  font-weight: 600;
+}
+nav i {
+  position: absolute;
+  top: 3px;
+  right: 25%;
+  font-style: normal;
+  font-size: 9px;
+  background: #263e34;
+  color: white;
+  padding: 0 5px;
+  border-radius: 8px;
+}
+.loading {
+  text-align: center;
+  padding-top: 100px;
+}
+a {
+  color: #365d46;
+}
+@media (max-width: 550px) {
+  header {
+    padding: 18px 22px;
+  }
+  .brand {
+    font-size: 21px;
+  }
+  .status {
+    font-size: 10px;
+  }
+  main {
+    padding: 30px 22px 125px;
+  }
+  .hero {
+    padding: 22px;
+  }
+  .hero h2 {
+    font-size: 24px;
+  }
+  .tile-art {
+    width: 90px;
+    gap: 5px;
+  }
+  .tile-art span {
+    width: 39px;
+    height: 53px;
+    font-size: 29px;
+  }
+  .hero .primary {
+    padding: 12px 14px;
+    font-size: 12px;
+  }
+  .lesson-row {
+    padding: 18px 14px;
+    gap: 12px;
+  }
+  .section-head span {
+    font-size: 10px;
+  }
+  .section-head h2 {
+    font-size: 18px;
+  }
+  .flashcard,
+  .panel {
+    padding: 22px;
+  }
+  .stats {
+    gap: 7px;
+  }
+  .stats span {
+    font-size: 10px;
+  }
+  .modal {
+    padding: 23px;
+  }
+  .button-row > * {
+    flex: 1;
+  }
+  .ratings {
+    gap: 5px;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  button {
+    transition:
+      background 0.15s,
+      transform 0.15s;
+  }
+  button:active {
+    transform: translateY(1px);
+  }
+}
