@@ -1,111 +1,73 @@
 # Haru Cards
 
-A little Korean, every day. A personal, offline-first Korean learning PWA built with React, TypeScript, and Vite. No account, backend, analytics, or paid API. Nothing has been deployed.
+An offline-first Korean learning app built with React, TypeScript, and Vite. Install it on your iPhone’s home screen or use it in a browser. No account or backend required.
 
-## Start in VS Code
+## Features
 
-Open **this repository folder** (`Haru-Cards`) in VS Code.
+- **Learn:** Six Hangul lessons covering vowels, consonants, syllable blocks, and vocabulary. All lessons are open from the start.
+- **Flashcards:** 233 starter cards, including 205 everyday words and school/club phrases. Choose any collection and practice freely. FSRS prioritizes due reviews; daily goals never restrict access.
+- **Progress:** Review statistics, lesson completion, vocabulary editing, and JSON backup/restore.
+- **Appearance:** Cherry blossoms and lantern-gold accents, with light, dark, and device-based themes. Matching browser and home-screen icons.
+- **Audio:** Korean device speech with optional romanization hints. Voice availability and offline playback depend on your device.
 
-Install Node.js 22 LTS or newer and pnpm 11.19.0. With npm available, install pnpm using `npm install -g pnpm@11.19.0`. Then:
+## Run locally
+
+Requires Node.js 22+ and pnpm 11.19.0.
 
 ```sh
+npm install -g pnpm@11.19.0
 pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-Open the local address printed by Vite (normally http://localhost:5173).
+Open the address printed by Vite, usually `http://localhost:5173`.
 
 ```sh
-pnpm test        # Scheduling, daily limits, backup, and IndexedDB tests
-pnpm build       # Type checking and production PWA build
-pnpm preview     # Serve the built app, normally http://localhost:4173
+pnpm test         # Unit tests
+pnpm build        # Type check and production build
+pnpm preview      # Preview the production build
 ```
 
-To run the browser checks after building:
+For browser tests, build first, then run:
 
 ```sh
 pnpm exec playwright install chromium webkit
 pnpm test:e2e
 ```
 
-## Test on an iPhone
+## Use on iPhone
 
-1. Put the phone and computer on the same Wi-Fi. Start `pnpm dev` and open the printed Network address in iPhone Safari. Allow the development server through your computer's firewall if necessary.
-2. This plain-HTTP LAN preview tests layout and lessons, **not offline installation**. Service workers need a secure context. `localhost` is trusted on the computer, but your computer's LAN IP is not trusted on the phone. Modern secure-context features may also be absent in that HTTP preview.
-3. For full phone testing before deployment, serve the production build through HTTPS using a local certificate trusted by both devices, or an HTTPS development tunnel. A tunnel exposes the app to anyone with its address; it needs the computer running. The simplest final installation is the GitHub Pages HTTPS address below.
-4. In Safari on that HTTPS address, choose Share → Add to Home Screen (and Open as Web App, if shown).
-5. Launch from the icon while online. Wait for the offline-ready status. Complete a lesson, review a card, close and reopen the app, then check that progress remains.
-6. Enable Airplane Mode, reopen the installed app, and repeat a review. Test audio separately; text and progress do not depend on it.
+1. Open [Haru Cards](https://senko3141.github.io/Haru-Cards/) in Safari after a successful deployment.
+2. Tap **Share → Add to Home Screen → Add**. Enable **Open as Web App** if shown.
+3. Open the installed app online once so it can cache its files. Offline readiness is shown in **Progress → On your iPhone**.
+4. Test offline study by reopening the app in Airplane Mode. Audio may still require a connection.
 
-Browser-engine checks are not a substitute for this physical-iPhone installation check.
+For local phone previews, use the Network address printed by `pnpm dev` on the same Wi-Fi. Full offline/PWA testing requires HTTPS; a plain-HTTP LAN address is only suitable for previewing the interface.
 
-## Learning loop
+## Publish and update
 
-Six guided lessons introduce 10 basic vowels, 14 basic consonants, syllable blocks, and 205 everyday words and phrases (233 starter cards total). A correct end-of-lesson check marks the lesson complete for progress tracking. All lessons and cards are accessible from first launch. This is a starter course, not a full Korean curriculum; tense consonants, compound vowels, broader sound changes, and grammar are future work.
+Set the repository’s **Settings → Pages → Source** to **GitHub Actions**. Every push to `main` runs tests, builds the app, and publishes it. Check **Actions → Publish Haru Cards** for the result; the workflow can also be run manually.
 
-Flashcards prioritizes due cards, then new cards, then upcoming cards. Choose any lesson collection or your custom words. The daily new-card setting is an optional goal, never a cap. Rate after revealing the answer: **Again** means forgotten, **Hard** recalled with effort, **Good** recalled, and **Easy** effortless. `ts-fsrs` schedules suggested review times, but no card is locked until its due date. Lesson quizzes track completion without gating access to other lessons.
+The installed app checks for updates when brought back into view, when connectivity returns, and every minute while visible. Tap **Update & reload** to apply a new release. Offline, it keeps the last downloaded version.
 
-Progress includes vocabulary editing, the daily limit, and JSON backup/restore. Custom vocabulary is immediately eligible for introduction without a lesson prerequisite. Edits preserve its review schedule.
+## Data and content
 
-## Local storage and backups
+Progress, cards, and settings are stored locally in IndexedDB. There is no cross-device sync. Export backups from **Progress** before clearing website data or moving to another device or address. Restoring a backup replaces the current saved data after confirmation.
 
-All lessons, cards, schedules, completion state, settings, and review history live in IndexedDB on this device. The app shell is precached by a service worker. Reloads and app updates preserve the database. There is no automatic cross-device sync.
+New starter cards merge automatically on startup and backup import without replacing existing cards, edits, or review history. Bundled lesson text also updates.
 
-Export a JSON backup from Progress regularly, especially before switching domains or restoring. Website storage can be cleared or evicted. Safari and an installed web app may use separate storage contexts, so use export/import when moving between them. A backup has `version: 1`; import validates fields, dates, references, and duplicates before showing a replacement confirmation. A valid restore replaces your saved data atomically, then includes any newer bundled starter cards and lesson text. The confirmation count includes those new cards. Invalid files do not modify storage. Maximum import size: 25 MB. Two tabs cannot silently overwrite one another's saved progress; a stale tab must reload after a save conflict.
+**When editing `src/content.ts`, append new entries to the end of each list.** Card IDs depend on their positions, so reordering or removing entries requires a migration. Changes to existing starter-card wording do not overwrite saved cards.
 
-Backups contain your personal learning data. Keep them out of public Git repositories.
+## Source files
 
-## Appearance and app icon
+| File                          | Purpose                                           |
+| ----------------------------- | ------------------------------------------------- |
+| `src/content.ts`              | Lessons and starter vocabulary                    |
+| `src/store.ts`                | Storage, backups, content updates, and scheduling |
+| `src/main.tsx`                | Screens, editing, audio, and appearance settings  |
+| `src/style.css`               | Light/dark festival theme and responsive layout   |
+| `public/`                     | Logo, icons, and festival artwork                 |
+| `vite.config.ts`              | PWA manifest and offline caching                  |
+| `.github/workflows/pages.yml` | GitHub Pages deployment                           |
 
-In Progress, choose **Use device setting**, **Light**, or **Dark**. The choice is saved locally and included in backups. Older backups default to the device setting. Device appearance changes apply immediately when using the system setting. A local appearance cache applies the theme before the app loads.
-
-The cherry-blossom festival theme pairs ivory and blush surfaces with lantern-gold details; dark mode uses a deep plum palette. Decorative floral and lantern artwork is bundled locally.
-
-The original vector logo combines a flashcard with a geometric 하 (the first syllable of Haru). It is used in the header, browser favicon, and iPhone/PWA icons. All icon files are bundled for offline use.
-
-## Content updates
-
-On startup and backup import, new bundled card IDs are added as unreviewed cards. Existing cards (including your edits), schedules, history, completed lessons, settings, and custom cards are preserved. Bundled lesson explanations refresh; additional imported lessons remain. Reopening the app does not duplicate cards. New cards are available immediately in Flashcards.
-
-When editing `src/content.ts`, append new entries to the end of the relevant list. IDs currently use each entry’s position, so do not reorder or remove existing entries. Changes to existing card wording do not overwrite saved cards; edit them in the app or add an explicit migration if needed.
-
-## Pronunciation audio
-
-This version uses the browser Web Speech API with a Korean (`ko-*`) voice, preferring one the browser identifies as local. Letter cards play example syllables (e.g. ㄱ → 가), not letter names. Romanization is an approximate aid, never an exact pronunciation guide, and stays hidden until requested during recall.
-
-- **Device speech, selected for this version:** no paid service or API key, but Korean voices may be missing. Remote voices require connectivity. Even a voice marked local must be tested offline on the actual iPhone. The app shows a clear message on missing voices or playback errors.
-- **Bundled recordings, future option:** licensed native-speaker recordings precached with the app would give predictable offline audio and consistent pronunciation. No third-party recordings have been copied into this project.
-- **Cloud TTS, not implemented:** needs a service, credentials, and often payment; unsuitable for this local-only MVP.
-
-Some operating-system speech services may send the text being spoken to their provider. Cards and learning history are not uploaded by this app. The app never substitutes an English voice for missing Korean audio.
-
-## Publish later on GitHub Pages (free for a public repository)
-
-The publishing workflow runs whenever you push to `main`. Saving files locally does not publish them. The workflow also supports manual runs.
-
-1. Commit and push this project to the existing `Senko3141/Haru-Cards` repository. GitHub Pages is free for a public repository. Do not include `node_modules`, `dist`, or personal backups.
-2. In repository Settings → Pages, choose **GitHub Actions** as the source.
-3. In Actions, select **Publish Haru Cards** → **Run workflow**. This step publishes the app; it has not been run here.
-4. Open `https://Senko3141.github.io/Haru-Cards/` and install from Safari.
-
-Vite's relative base and the manifest's relative scope/start URL support a repository subdirectory. The workflow builds and uploads only `dist`. The public site includes the bundled starter course, but your locally entered vocabulary and progress remain in your device storage. Push to `main` for later releases. While online, the app checks for updates when you return to it, reconnect, and every minute while visible. Tap **Update & reload** when a new release is ready; it will not refresh in the middle of a session automatically.
-
-## Project map
-
-- `src/content.ts`: original lesson wording and starter cards
-- `src/store.ts`: IndexedDB, validated backups, FSRS and daily queue
-- `src/main.tsx`: Learn, Flashcards, Progress, audio and editing
-- `src/style.css`: responsive layout using system fonts (no network font dependency)
-- `vite.config.ts`: install manifest and offline cache
-- `src/store.test.ts`, `e2e/app.spec.ts`: unit and browser checks
-
-## References
-
-Starter letter structure and romanization were checked against the National Institute of Korean Language. Lessons use original concise explanations, with intentionally limited vocabulary.
-
-- [NIKL: Hangul structure](https://m.korean.go.kr/eng_hangeul/principle/001.html)
-- [NIKL: Romanization](https://m.korean.go.kr/front_eng/roman/roman_01.do)
-- [TS-FSRS](https://github.com/open-spaced-repetition/ts-fsrs)
-- [MDN: Local and remote speech voices](https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesisVoice/localService)
-- [Vite: Static deployment](https://vite.dev/guide/static-deploy)
-- [GitHub Pages availability](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages)
+Hangul and romanization references: [National Institute of Korean Language](https://m.korean.go.kr/eng_hangeul/principle/001.html), [romanization guide](https://m.korean.go.kr/front_eng/roman/roman_01.do). Scheduling: [TS-FSRS](https://github.com/open-spaced-repetition/ts-fsrs).
