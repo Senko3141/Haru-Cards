@@ -890,3 +890,153 @@ nav button[aria-current] {
     margin-top: 86px;
   }
 }
+
+/* Short, one-shot motion. No looping decorations or layout animations. */
+@media (prefers-reduced-motion: no-preference) {
+  .screen {
+    animation: screen-arrive 240ms ease-out both;
+  }
+  .study-card,
+  .lesson-card {
+    animation: card-arrive 260ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  .answer-content {
+    animation: answer-arrive 180ms ease-out both;
+  }
+  .notice {
+    animation: answer-arrive 180ms ease-out both;
+  }
+  .overlay {
+    animation: veil-arrive 160ms ease-out both;
+  }
+  .modal {
+    animation: modal-arrive 220ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+  .lesson-row {
+    animation: row-arrive 220ms ease-out both;
+    transition:
+      background-color 160ms ease,
+      transform 160ms ease;
+  }
+  .lesson-row:nth-child(2) {
+    animation-delay: 25ms;
+  }
+  .lesson-row:nth-child(3) {
+    animation-delay: 50ms;
+  }
+  .lesson-row:nth-child(4) {
+    animation-delay: 75ms;
+  }
+  .lesson-row:nth-child(5) {
+    animation-delay: 100ms;
+  }
+  .lesson-row:nth-child(6) {
+    animation-delay: 125ms;
+  }
+  button,
+  .file-label,
+  select,
+  input {
+    transition:
+      background-color 160ms ease,
+      border-color 160ms ease,
+      box-shadow 160ms ease,
+      transform 160ms ease;
+  }
+  button:enabled:active,
+  .file-label:active {
+    transform: scale(0.98);
+  }
+  .brandmark {
+    transition: transform 180ms ease;
+  }
+  nav button > span {
+    transition: transform 180ms ease;
+  }
+  nav button[aria-current] > span {
+    transform: translateY(-2px);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .primary:enabled:hover,
+    .secondary:enabled:hover,
+    .rating:enabled:hover {
+      transform: translateY(-2px);
+    }
+    .brand:hover .brandmark {
+      transform: rotate(-5deg);
+    }
+    .lesson-row:enabled:hover .arrow {
+      transform: translate(2px, -2px);
+    }
+    .arrow {
+      transition: transform 160ms ease;
+    }
+  }
+}
+@keyframes screen-arrive {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes card-arrive {
+  from {
+    opacity: 0;
+    transform: translateX(36px) rotate(1deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) rotate(0);
+  }
+}
+@keyframes answer-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes veil-arrive {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes modal-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes row-arrive {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+html {
+  scroll-padding-bottom: calc(100px + env(safe-area-inset-bottom));
+}

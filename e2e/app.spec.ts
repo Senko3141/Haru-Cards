@@ -166,3 +166,38 @@ test("appearance follows the device, persists overrides, and includes icons", as
     expect(response.headers()["content-type"]).toContain("image/");
   }
 });
+
+test("card slides advance once and reduced motion disables animation", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Flashcards", exact: false }).click();
+  const first = await page.locator(".study-card .hangul").textContent();
+  await page.getByRole("button", { name: "Reveal answer" }).click();
+  await page
+    .getByRole("button", { name: /^Good/ })
+    .evaluate((button: HTMLButtonElement) => {
+      button.click();
+      button.click();
+    });
+  await expect(page.locator(".study-card .hangul")).not.toHaveText(first!);
+  await expect(page.getByText("1 / 5 new today")).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Reveal answer" }),
+  ).toBeFocused();
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.getByRole("button", { name: "Reveal answer" }).click();
+  expect(
+    await page
+      .locator(".answer-content")
+      .evaluate((el) => getComputedStyle(el).animationName),
+  ).toBe("none");
+  await page.getByRole("button", { name: /^Good/ }).click();
+  await expect(page.getByText("2 / 5 new today")).toBeVisible();
+  expect(
+    await page
+      .locator(".study-card")
+      .evaluate((el) => getComputedStyle(el).animationName),
+  ).toBe("none");
+});

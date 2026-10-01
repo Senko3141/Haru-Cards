@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { createEmptyCard, type Grade } from "ts-fsrs";
 import { useRegisterSW } from "virtual:pwa-register/react";
@@ -17,6 +17,10 @@ import {
 } from "./store";
 import "./style.css";
 function App() {
+  const cardElement = useRef<HTMLElement | null>(null);
+  const ratingInFlight = useRef(false);
+  const [transitioning, setTransitioning] = useState(false);
+  const [cardTurn, setCardTurn] = useState(0);
   const [activeId, setActiveId] = useState<string>();
   const [data, setData] = useState<AppData>();
   const [fatal, setFatal] = useState("");
@@ -45,6 +49,12 @@ function App() {
       setNotice("Offline setup failed. Reconnect and reload to try again.");
     },
   });
+  useLayoutEffect(() => {
+    if (cardTurn > 0)
+      cardElement.current
+        ?.querySelector<HTMLButtonElement>(".reveal")
+        ?.focus({ preventScroll: true });
+  }, [cardTurn]);
   useEffect(() => {
     if (!data) return;
     const preference = data.settings.theme ?? "system";
@@ -245,11 +255,35 @@ function App() {
     setFeedback("");
   }
   async function rate(grade: Grade) {
-    if (!current || !revealed) return;
-    if (await commit(review(data!, current.id, grade, new Date()))) {
-      setActiveId(undefined);
-      setRevealed(false);
-      setHint(false);
+    if (!current || !revealed || ratingInFlight.current) return;
+    ratingInFlight.current = true;
+    setTransitioning(true);
+    let exit: Animation | undefined;
+    try {
+      if (
+        !window.matchMedia("(prefers-reduced-motion: reduce)").matches &&
+        cardElement.current?.animate
+      ) {
+        exit = cardElement.current.animate(
+          [
+            { transform: "translateX(0) rotate(0deg)", opacity: 1 },
+            { transform: "translateX(-44px) rotate(-2deg)", opacity: 0 },
+          ],
+          { duration: 180, easing: "cubic-bezier(.4,0,1,1)", fill: "forwards" },
+        );
+        await exit.finished.catch(() => {});
+      }
+      if (await commit(review(data!, current.id, grade, new Date()))) {
+        setActiveId(undefined);
+        setRevealed(false);
+        setHint(false);
+        setCardTurn((turn) => turn + 1);
+      }
+    } finally {
+      // Failed saves keep the current card and restore its appearance for retry.
+      exit?.cancel();
+      ratingInFlight.current = false;
+      setTransitioning(false);
     }
   }
   const interval = (date: Date) => {
@@ -268,7 +302,7 @@ function App() {
           href="#"
           onClick={(e) => {
             e.preventDefault();
-            changeScreen("Learn");
+            if (!ratingInFlight.current) changeScreen("Learn");
           }}
         >
           <img
@@ -281,7 +315,7 @@ function App() {
           </span>
         </a>
       </header>
-      <main>
+      <main className="screen" key={`${screen}-${lessonId ?? "home"}`}>
         {notice && (
           <div className="notice" role="status">
             {notice}
@@ -293,7 +327,10 @@ function App() {
         {needRefresh && (
           <div className="notice">
             An app update is ready.
-            <button disabled={busy} onClick={() => updateServiceWorker(true)}>
+            <button
+              disabled={busy || transitioning}
+              onClick={() => updateServiceWorker(true)}
+            >
               Update & reload
             </button>
           </div>
@@ -376,7 +413,7 @@ function App() {
             <h1 className="small-title">{lesson.title}</h1>
             <p className="lesson-copy">{lesson.text}</p>
             {sample ? (
-              <section className="flashcard">
+              <section className="flashcard lesson-card" key={sample.id}>
                 <span className="eyebrow">
                   {step + 1} OF {lessonCards.length} · SAY IT OUT LOUD
                 </span>
@@ -465,6 +502,7 @@ function App() {
               Card collection
               <select
                 aria-label="Card collection"
+                disabled={transitioning || busy}
                 value={deck}
                 onChange={(e) => {
                   setDeck(e.target.value);
@@ -489,7 +527,12 @@ function App() {
               </span>
             </div>
             {current ? (
-              <section className="flashcard" key={current.id}>
+              <section
+                ref={cardElement}
+                className="flashcard study-card"
+                key={`${current.id}-${cardTurn}`}
+                aria-busy={transitioning || busy}
+              >
                 <span className="eyebrow">
                   {current.lessonId === "words" || current.lessonId === "custom"
                     ? "WHAT DOES THIS MEAN?"
@@ -510,7 +553,7 @@ function App() {
                   </>
                 )}
                 {revealed ? (
-                  <>
+                  <div className="answer-content">
                     <h2>{current.back}</h2>
                     <p>{current.note}</p>
                     <button
@@ -524,7 +567,7 @@ function App() {
                       {(["Again", "Hard", "Good", "Easy"] as const).map(
                         (label, i) => (
                           <button
-                            disabled={busy}
+                            disabled={busy || transitioning}
                             className={`rating rating-${i}`}
                             key={label}
                             onClick={() => rate((i + 1) as Grade)}
@@ -543,7 +586,7 @@ function App() {
                         ),
                       )}
                     </div>
-                  </>
+                  </div>
                 ) : (
                   <button
                     className="primary reveal"
@@ -601,7 +644,7 @@ function App() {
                 <select
                   aria-label="Color theme"
                   value={data.settings.theme ?? "system"}
-                  disabled={busy}
+                  disabled={busy || transitioning}
                   onChange={(e) =>
                     commit({
                       ...data,
@@ -629,7 +672,7 @@ function App() {
                 <select
                   aria-label="New cards per day"
                   value={data.settings.newLimit}
-                  disabled={busy}
+                  disabled={busy || transitioning}
                   onChange={(e) =>
                     commit({
                       ...data,
@@ -716,7 +759,7 @@ function App() {
                   <input
                     type="file"
                     accept=".json,application/json"
-                    disabled={busy}
+                    disabled={busy || transitioning}
                     onChange={(e) => {
                       importBackup(e.target.files?.[0]);
                       e.target.value = "";
@@ -760,6 +803,7 @@ function App() {
           <button
             key={label}
             aria-current={screen === label ? "page" : undefined}
+            disabled={transitioning || busy}
             onClick={() => changeScreen(label)}
           >
             <span aria-hidden="true">{icon}</span>
@@ -790,14 +834,14 @@ function App() {
             <div className="button-row">
               <button
                 className="secondary"
-                disabled={busy}
+                disabled={busy || transitioning}
                 onClick={() => setPending(undefined)}
               >
                 Cancel
               </button>
               <button
                 className="primary"
-                disabled={busy}
+                disabled={busy || transitioning}
                 onClick={async () => {
                   if (await commit(pending)) {
                     setPending(undefined);
@@ -874,12 +918,12 @@ function App() {
               <button
                 type="button"
                 className="secondary"
-                disabled={busy}
+                disabled={busy || transitioning}
                 onClick={() => setEditor(undefined)}
               >
                 Cancel
               </button>
-              <button className="primary" disabled={busy}>
+              <button className="primary" disabled={busy || transitioning}>
                 Save word
               </button>
             </div>
