@@ -46,6 +46,31 @@ function App() {
     },
   });
   useEffect(() => {
+    if (!data) return;
+    const preference = data.settings.theme ?? "system";
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const apply = () => {
+      const theme =
+        preference === "system"
+          ? media.matches
+            ? "dark"
+            : "light"
+          : preference;
+      document.documentElement.dataset.theme = theme;
+      document
+        .querySelector('meta[name="theme-color"]')
+        ?.setAttribute("content", theme === "dark" ? "#14211c" : "#f6f5ef");
+    };
+    apply();
+    try {
+      localStorage.setItem("haru-appearance", preference);
+    } catch {
+      /* IndexedDB remains the source of truth. */
+    }
+    media.addEventListener("change", apply);
+    return () => media.removeEventListener("change", apply);
+  }, [data?.settings.theme, !!data]);
+  useEffect(() => {
     readData()
       .then(setData)
       .catch(() =>
@@ -183,7 +208,11 @@ function App() {
   if (!data)
     return (
       <main className="loading">
-        <div className="brandmark">하</div>
+        <img
+          className="brandmark"
+          src={`${import.meta.env.BASE_URL}logo.svg`}
+          alt=""
+        />
         <h1>Haru Cards</h1>
         <p role="status">{fatal || "Opening your learning space…"}</p>
       </main>
@@ -242,7 +271,11 @@ function App() {
             changeScreen("Learn");
           }}
         >
-          <span className="brandmark">하</span>
+          <img
+            className="brandmark"
+            src={`${import.meta.env.BASE_URL}logo.svg`}
+            alt=""
+          />
           <span>
             haru <b>cards</b>
           </span>
@@ -593,6 +626,34 @@ function App() {
               </div>
             </div>
             <section className="panel">
+              <h2>Appearance</h2>
+              <label className="setting">
+                Color theme
+                <select
+                  aria-label="Color theme"
+                  value={data.settings.theme ?? "system"}
+                  disabled={busy}
+                  onChange={(e) =>
+                    commit({
+                      ...data,
+                      settings: {
+                        ...data.settings,
+                        theme: e.target.value as "system" | "light" | "dark",
+                      },
+                    })
+                  }
+                >
+                  <option value="system">Use device setting</option>
+                  <option value="light">Light</option>
+                  <option value="dark">Dark</option>
+                </select>
+              </label>
+              <p className="muted">
+                Choose your preferred contrast and brightness, or follow your
+                device. Your choice is saved with your progress.
+              </p>
+            </section>
+            <section className="panel">
               <h2>Make it your routine</h2>
               <label className="setting">
                 New cards per day
@@ -603,7 +664,10 @@ function App() {
                   onChange={(e) =>
                     commit({
                       ...data,
-                      settings: { newLimit: Number(e.target.value) },
+                      settings: {
+                        ...data.settings,
+                        newLimit: Number(e.target.value),
+                      },
                     })
                   }
                 >

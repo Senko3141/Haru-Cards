@@ -127,3 +127,42 @@ test("all paths and flashcards are open on first launch", async ({ page }) => {
     page.getByRole("button", { name: "Reveal answer" }),
   ).toBeVisible();
 });
+
+test("appearance follows the device, persists overrides, and includes icons", async ({
+  page,
+}) => {
+  await page.emulateMedia({ colorScheme: "dark" });
+  await page.goto("/");
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await page.getByRole("button", { name: "Progress", exact: true }).click();
+  await page.getByLabel("Color theme").selectOption("light");
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  await page.getByRole("button", { name: "Progress", exact: true }).click();
+  await page.getByLabel("Color theme").selectOption("dark");
+  await page.getByLabel("New cards per day").selectOption("10");
+  await expect(page.getByLabel("Color theme")).toHaveValue("dark");
+  await page.getByLabel("Color theme").selectOption("system");
+  await page.emulateMedia({ colorScheme: "light" });
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  await page.emulateMedia({ colorScheme: "dark" });
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await page.getByRole("button", { name: "Flashcards", exact: false }).click();
+  await page.getByRole("button", { name: "Reveal answer" }).click();
+  await page.screenshot({
+    path: `test-results/dark-${test.info().project.name}.png`,
+    fullPage: true,
+  });
+  for (const path of [
+    "/logo.svg",
+    "/favicon-32.png",
+    "/favicon.ico",
+    "/apple-touch-icon.png",
+    "/icon-512.png",
+  ]) {
+    const response = await page.request.get(path);
+    expect(response.ok()).toBe(true);
+    expect(response.headers()["content-type"]).toContain("image/");
+  }
+});

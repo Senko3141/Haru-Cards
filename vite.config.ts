@@ -7,7 +7,14 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: "prompt",
-      includeAssets: ["icon-192.png", "icon-512.png", "apple-touch-icon.png"],
+      includeAssets: [
+        "logo.svg",
+        "favicon-32.png",
+        "favicon.ico",
+        "icon-192.png",
+        "icon-512.png",
+        "apple-touch-icon.png",
+      ],
       manifest: {
         name: "Haru Cards — Learn Korean",
         short_name: "Haru Cards",

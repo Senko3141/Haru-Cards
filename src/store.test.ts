@@ -151,3 +151,22 @@ describe("starter content upgrades", () => {
     );
   });
 });
+
+describe("appearance settings", () => {
+  it("accepts older backups without a theme and round-trips theme preferences", () => {
+    const old = initialData();
+    delete old.settings.theme;
+    expect(
+      parseBackup(JSON.parse(JSON.stringify(old))).settings.theme,
+    ).toBeUndefined();
+    for (const theme of ["system", "light", "dark"] as const) {
+      old.settings.theme = theme;
+      expect(parseBackup(JSON.parse(JSON.stringify(old))).settings.theme).toBe(
+        theme,
+      );
+    }
+    expect(() =>
+      parseBackup({ ...old, settings: { ...old.settings, theme: "invalid" } }),
+    ).toThrow();
+  });
+});

@@ -55,6 +55,12 @@ Export a JSON backup from Progress regularly, especially before switching domain
 
 Backups contain your personal learning data. Keep them out of public Git repositories.
 
+## Appearance and app icon
+
+In Progress, choose **Use device setting**, **Light**, or **Dark**. The choice is saved locally and included in backups. Older backups default to the device setting. Device appearance changes apply immediately when using the system setting. A local appearance cache applies the theme before the app loads.
+
+The original vector logo combines a flashcard with a geometric 하 (the first syllable of Haru). It is used in the header, browser favicon, and iPhone/PWA icons. All icon files are bundled for offline use.
+
 ## Content updates
 
 On startup and backup import, new bundled card IDs are added as unreviewed cards. Existing cards (including your edits), schedules, history, completed lessons, settings, and custom cards are preserved. Bundled lesson explanations refresh; additional imported lessons remain. Reopening the app does not duplicate cards. New cards are available immediately in Flashcards.

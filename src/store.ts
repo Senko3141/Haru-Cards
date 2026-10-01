@@ -8,7 +8,7 @@ export type AppData = {
   lessons: Lesson[];
   cards: StudyCard[];
   completed: string[];
-  settings: { newLimit: number };
+  settings: { newLimit: number; theme?: "system" | "light" | "dark" };
   history: { cardId: string; at: string; rating: number; isNew: boolean }[];
 };
 export function initialData(): AppData {
@@ -17,7 +17,7 @@ export function initialData(): AppData {
     lessons: structuredClone(lessons),
     cards: starterEntries.map((e) => ({ ...e, schedule: createEmptyCard() })),
     completed: [],
-    settings: { newLimit: 5 },
+    settings: { newLimit: 5, theme: "system" },
     history: [],
   };
 }
@@ -178,7 +178,10 @@ const schema = z.object({
   lessons: z.array(lesson).max(1000),
   cards: z.array(entry).max(10000),
   completed: z.array(text).max(1000),
-  settings: z.object({ newLimit: z.number().int().min(0).max(100) }),
+  settings: z.object({
+    newLimit: z.number().int().min(0).max(100),
+    theme: z.enum(["system", "light", "dark"]).optional(),
+  }),
   history: z
     .array(
       z.object({
