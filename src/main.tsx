@@ -59,7 +59,7 @@ function App() {
       document.documentElement.dataset.theme = theme;
       document
         .querySelector('meta[name="theme-color"]')
-        ?.setAttribute("content", theme === "dark" ? "#14211c" : "#f6f5ef");
+        ?.setAttribute("content", theme === "dark" ? "#201724" : "#fff7f3");
     };
     apply();
     try {

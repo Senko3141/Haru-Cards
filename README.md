@@ -59,6 +59,8 @@ Backups contain your personal learning data. Keep them out of public Git reposit
 
 In Progress, choose **Use device setting**, **Light**, or **Dark**. The choice is saved locally and included in backups. Older backups default to the device setting. Device appearance changes apply immediately when using the system setting. A local appearance cache applies the theme before the app loads.
 
+The cherry-blossom festival theme pairs ivory and blush surfaces with lantern-gold details; dark mode uses a deep plum palette. Decorative floral and lantern artwork is bundled locally.
+
 The original vector logo combines a flashcard with a geometric 하 (the first syllable of Haru). It is used in the header, browser favicon, and iPhone/PWA icons. All icon files are bundled for offline use.
 
 ## Content updates

@@ -9,6 +9,7 @@ export default defineConfig({
       registerType: "prompt",
       includeAssets: [
         "logo.svg",
+        "festival.svg",
         "favicon-32.png",
         "favicon.ico",
         "icon-192.png",
@@ -19,8 +20,8 @@ export default defineConfig({
         name: "Haru Cards — Learn Korean",
         short_name: "Haru Cards",
         description: "A little Korean, every day.",
-        theme_color: "#263e34",
-        background_color: "#f6f5ef",
+        theme_color: "#642d47",
+        background_color: "#fff7f3",
         display: "standalone",
         start_url: ".",
         scope: ".",
