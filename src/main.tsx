@@ -280,14 +280,6 @@ function App() {
             haru <b>cards</b>
           </span>
         </a>
-        <span className="status">
-          <i />
-          {!online
-            ? "Offline"
-            : offlineReady
-              ? "Saved for offline"
-              : "Your daily Korean"}
-        </span>
       </header>
       <main>
         {notice && (
@@ -308,20 +300,13 @@ function App() {
         )}
         {screen === "Learn" && !lesson && (
           <>
-            <div className="eyebrow">작은 시작 · A SMALL BEGINNING</div>
             <h1>
               A little Korean.
               <br />
               <em>Every day.</em>
             </h1>
-            <p className="intro">
-              From your first letter to your first words.
-              <br />
-              One small step is enough for today.
-            </p>
             <section className="hero">
               <div>
-                <span className="eyebrow">YOUR NEXT STEP</span>
                 <h2>{nextLesson?.title ?? "Keep your Korean growing"}</h2>
                 <p>
                   {nextLesson?.subtitle ??
@@ -373,15 +358,6 @@ function App() {
                   </button>
                 );
               })}
-            </div>
-            <div className="tip">
-              <span>✦</span>
-              <p>
-                <b>Small sessions, lasting memories.</b>
-                <br />
-                Try five new cards a day. Your reviews will return when it’s
-                time.
-              </p>
             </div>
           </>
         )}
@@ -481,7 +457,6 @@ function App() {
         )}
         {screen === "Flashcards" && (
           <>
-            <div className="eyebrow">MAKE IT STICK</div>
             <h1>Your flashcards.</h1>
             <p className="intro">
               Choose any topic. Practice as much as you like.
@@ -596,16 +571,10 @@ function App() {
                 </button>
               </section>
             )}
-            <p className="footnote">
-              Again = forgot · Hard = recalled with effort
-              <br />
-              Good = recalled · Easy = effortless
-            </p>
           </>
         )}
         {screen === "Progress" && (
           <>
-            <div className="eyebrow">YOUR SMALL STEPS ADD UP</div>
             <h1>
               Look how far
               <br />
