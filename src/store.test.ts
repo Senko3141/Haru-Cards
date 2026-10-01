@@ -13,42 +13,22 @@ import {
 } from "./store";
 const now = new Date("2026-10-01T12:00:00");
 describe("learning and review", () => {
-  it("locks cards until their lesson is complete", () => {
-    const d = initialData();
-    expect(queue(d, now)).toHaveLength(0);
-    d.completed = ["vowels"];
-    expect(queue(d, now)).toHaveLength(5);
+  it("makes every card available before completing any lessons", () => {
+    const data = initialData();
+    expect(queue(data, now)).toHaveLength(data.cards.length);
+    expect(queue(data, now).some((c) => c.lessonId === "words")).toBe(true);
   });
-  it("counts new introductions once and keeps due learning cards available at the daily limit", () => {
-    let d = initialData();
-    d.completed = ["vowels"];
-    d.settings.newLimit = 1;
-    const id = queue(d, now)[0].id;
-    d = review(d, id, Rating.Again, now);
-    expect(newToday(d, now)).toBe(1);
-    expect(queue(d, now)).toHaveLength(0);
-    const later = new Date(+now + 10 * 60 * 1000);
-    expect(queue(d, later)[0].id).toBe(id);
-    d = review(d, id, Rating.Good, later);
-    expect(newToday(d, later)).toBe(1);
-  });
-  it("resets new-card availability on the next local day", () => {
-    let d = initialData();
-    d.completed = ["vowels"];
-    d.settings.newLimit = 1;
-    d = review(d, queue(d, now)[0].id, Rating.Easy, now);
-    const tomorrow = new Date(now);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    expect(newToday(d, tomorrow)).toBe(0);
-    expect(queue(d, tomorrow).some((c) => c.schedule.reps === 0)).toBe(true);
-  });
-  it("zero new-card limit never suppresses due reviews", () => {
-    let d = initialData();
-    d.completed = ["vowels"];
-    const id = queue(d, now)[0].id;
-    d = review(d, id, Rating.Again, now);
-    d.settings.newLimit = 0;
-    expect(queue(d, new Date(+now + 600000))).toHaveLength(1);
+  it("keeps all cards available after reaching a daily goal, including zero", () => {
+    let data = initialData();
+    data.settings.newLimit = 0;
+    data = review(data, data.cards[0].id, Rating.Good, now);
+    expect(newToday(data, now)).toBe(1);
+    expect(queue(data, now)).toHaveLength(data.cards.length);
+    expect(queue(data, now).at(-1)!.id).toBe(data.cards[0].id);
+    const later = new Date(+data.cards[0].schedule.due + 1);
+    expect(queue(data, later)[0].id).toBe(data.cards[0].id);
+    data = review(data, data.cards[0].id, Rating.Good, later);
+    expect(data.history.filter((h) => h.isNew)).toHaveLength(1);
   });
   it("schedules all four ratings with FSRS and preserves a history record", () => {
     for (const rating of [1, 2, 3, 4] as const) {
@@ -166,6 +146,8 @@ describe("starter content upgrades", () => {
     );
     expect(
       queue(restored, now).filter((card) => card.schedule.reps === 0),
-    ).toHaveLength(2);
+    ).toHaveLength(
+      restored.cards.filter((card) => card.schedule.reps === 0).length,
+    );
   });
 });

@@ -20,6 +20,7 @@ function App() {
   const [activeId, setActiveId] = useState<string>();
   const [data, setData] = useState<AppData>();
   const [fatal, setFatal] = useState("");
+  const [deck, setDeck] = useState("all");
   const [screen, setScreen] = useState("Learn");
   const [lessonId, setLessonId] = useState<string>();
   const [step, setStep] = useState(0);
@@ -104,11 +105,13 @@ function App() {
     };
   }, []);
   useEffect(() => {
-    if (data && screen === "Review" && !activeId) {
-      const first = queue(data, now)[0];
+    if (data && screen === "Flashcards" && !activeId) {
+      const first = queue(data, now).find(
+        (c) => deck === "all" || c.lessonId === deck,
+      );
       if (first) setActiveId(first.id);
     }
-  }, [data, screen, activeId, now]);
+  }, [data, screen, activeId, now, deck]);
   async function commit(next: AppData) {
     if (saving.current) return false;
     saving.current = true;
@@ -185,7 +188,9 @@ function App() {
         <p role="status">{fatal || "Opening your learning space…"}</p>
       </main>
     );
-  const available = queue(data, now);
+  const available = queue(data, now).filter(
+    (c) => deck === "all" || c.lessonId === deck,
+  );
   const current = data.cards.find((c) => c.id === activeId) ?? available[0];
   const lesson = data.lessons.find((l) => l.id === lessonId);
   const lessonCards = lesson
@@ -196,9 +201,6 @@ function App() {
     (h) => localDay(new Date(h.at)) === localDay(now),
   ).length;
   const nextLesson = data.lessons.find((l) => !data.completed.includes(l.id));
-  const future = data.cards
-    .filter((c) => c.schedule.reps > 0 && c.schedule.due > now)
-    .sort((a, b) => +a.schedule.due - +b.schedule.due)[0];
   function changeScreen(s: string) {
     setActiveId(undefined);
     setScreen(s);
@@ -297,7 +299,7 @@ function App() {
                   onClick={() =>
                     nextLesson
                       ? openLesson(nextLesson.id)
-                      : changeScreen("Review")
+                      : changeScreen("Flashcards")
                   }
                 >
                   {data.completed.length
@@ -321,13 +323,10 @@ function App() {
             <div className="path">
               {data.lessons.map((l, i) => {
                 const complete = data.completed.includes(l.id);
-                const unlocked =
-                  i === 0 || data.completed.includes(data.lessons[i - 1].id);
                 return (
                   <button
                     className="lesson-row"
                     key={l.id}
-                    disabled={!unlocked}
                     onClick={() => openLesson(l.id)}
                   >
                     <span className={`number ${complete ? "done" : ""}`}>
@@ -337,7 +336,7 @@ function App() {
                       <strong>{l.title}</strong>
                       <small>{l.subtitle}</small>
                     </span>
-                    <span className="arrow">{unlocked ? "↗" : "Later"}</span>
+                    <span className="arrow">↗</span>
                   </button>
                 );
               })}
@@ -437,7 +436,7 @@ function App() {
                       })
                     ) {
                       setLessonId(undefined);
-                      changeScreen("Review");
+                      changeScreen("Flashcards");
                     }
                   }}
                 >
@@ -447,13 +446,36 @@ function App() {
             </div>
           </>
         )}
-        {screen === "Review" && (
+        {screen === "Flashcards" && (
           <>
             <div className="eyebrow">MAKE IT STICK</div>
-            <h1>Your daily practice.</h1>
-            <p className="intro">Recall first. Reveal when you’re ready.</p>
+            <h1>Your flashcards.</h1>
+            <p className="intro">
+              Choose any topic. Practice as much as you like.
+            </p>
+            <label className="setting">
+              Card collection
+              <select
+                aria-label="Card collection"
+                value={deck}
+                onChange={(e) => {
+                  setDeck(e.target.value);
+                  setActiveId(undefined);
+                  setRevealed(false);
+                  setHint(false);
+                }}
+              >
+                <option value="all">All cards</option>
+                {data.lessons.map((l) => (
+                  <option key={l.id} value={l.id}>
+                    {l.title}
+                  </option>
+                ))}
+                <option value="custom">My added words</option>
+              </select>
+            </label>
             <div className="review-meta">
-              <span>{available.length} ready now</span>
+              <span>{available.length} cards available</span>
               <span>
                 {newToday(data, now)} / {data.settings.newLimit} new today
               </span>
@@ -526,27 +548,18 @@ function App() {
             ) : (
               <section className="panel empty">
                 <div className="empty-symbol">✦</div>
-                <h2>
-                  {data.completed.length ||
-                  data.cards.some((c) => c.lessonId === "custom")
-                    ? "You’re caught up for now."
-                    : "Your first step starts in Learn."}
-                </h2>
+                <h2>No cards in this collection yet.</h2>
                 <p>
-                  {future
-                    ? `Next scheduled review: ${future.schedule.due.toLocaleString()}.`
-                    : nextLesson
-                      ? "Complete a lesson to unlock its cards."
-                      : "Come back tomorrow for more new cards."}
+                  Add your own words from Progress or choose another collection.
                 </p>
-                {newToday(data, now) >= data.settings.newLimit && (
-                  <p>Your daily new-card limit has been reached.</p>
-                )}
                 <button
                   className="primary"
-                  onClick={() => changeScreen("Learn")}
+                  onClick={() => {
+                    setDeck("all");
+                    setActiveId(undefined);
+                  }}
                 >
-                  Explore lessons →
+                  Show all cards
                 </button>
               </section>
             )}
@@ -614,7 +627,8 @@ function App() {
                 </select>
               </label>
               <p className="muted">
-                Due reviews are always available, even when you pause new cards.
+                This is a daily goal, not a limit. All flashcards are always
+                available.
               </p>
             </section>
             <section className="panel">
@@ -630,7 +644,7 @@ function App() {
                 </button>
               </div>
               <p className="muted">
-                New words enter your daily queue. Editing keeps their review
+                New words are available immediately. Editing keeps their review
                 history.
               </p>
               {data.cards
@@ -707,7 +721,7 @@ function App() {
       <nav aria-label="Main navigation">
         {[
           ["Learn", "◫"],
-          ["Review", "▱"],
+          ["Flashcards", "▱"],
           ["Progress", "◴"],
         ].map(([label, icon]) => (
           <button
@@ -717,7 +731,7 @@ function App() {
           >
             <span aria-hidden="true">{icon}</span>
             {label}
-            {label === "Review" && available.length > 0 && (
+            {label === "Flashcards" && available.length > 0 && (
               <i>{available.length}</i>
             )}
           </button>

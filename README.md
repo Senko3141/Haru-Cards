@@ -41,11 +41,11 @@ Browser-engine checks are not a substitute for this physical-iPhone installation
 
 ## Learning loop
 
-Six guided lessons introduce 10 basic vowels, 14 basic consonants, syllable blocks, and 205 everyday words and phrases (233 starter cards total). A correct end-of-lesson check marks the lesson complete and unlocks its cards. This is a starter course, not a full Korean curriculum; tense consonants, compound vowels, broader sound changes, and grammar are future work.
+Six guided lessons introduce 10 basic vowels, 14 basic consonants, syllable blocks, and 205 everyday words and phrases (233 starter cards total). A correct end-of-lesson check marks the lesson complete for progress tracking. All lessons and cards are accessible from first launch. This is a starter course, not a full Korean curriculum; tense consonants, compound vowels, broader sound changes, and grammar are future work.
 
-Review due cards first, then up to the daily new-card allowance (default five). Rate only after revealing the answer. **Again** means forgotten, **Hard** recalled with effort, **Good** recalled, and **Easy** effortless. `ts-fsrs` schedules the next review using FSRS; this app does not train personal FSRS parameters. The limit counts first introductions using your current local calendar day; due/relearning cards are never capped. A card rated Again returns after its scheduled short interval, not immediately. Setting the new-card limit to zero pauses introductions.
+Flashcards prioritizes due cards, then new cards, then upcoming cards. Choose any lesson collection or your custom words. The daily new-card setting is an optional goal, never a cap. Rate after revealing the answer: **Again** means forgotten, **Hard** recalled with effort, **Good** recalled, and **Easy** effortless. `ts-fsrs` schedules suggested review times, but no card is locked until its due date. Lesson quizzes track completion without gating access to other lessons.
 
-Progress includes vocabulary editing, the daily limit, and JSON backup/restore. Custom vocabulary is immediately eligible for introduction under that limit. Edits preserve its review schedule.
+Progress includes vocabulary editing, the daily limit, and JSON backup/restore. Custom vocabulary is immediately eligible for introduction without a lesson prerequisite. Edits preserve its review schedule.
 
 ## Local storage and backups
 
@@ -57,7 +57,7 @@ Backups contain your personal learning data. Keep them out of public Git reposit
 
 ## Content updates
 
-On startup and backup import, new bundled card IDs are added as unreviewed cards. Existing cards (including your edits), schedules, history, completed lessons, settings, and custom cards are preserved. Bundled lesson explanations refresh; additional imported lessons remain. Reopening the app does not duplicate cards. New cards still obey lesson locks and your daily limit.
+On startup and backup import, new bundled card IDs are added as unreviewed cards. Existing cards (including your edits), schedules, history, completed lessons, settings, and custom cards are preserved. Bundled lesson explanations refresh; additional imported lessons remain. Reopening the app does not duplicate cards. New cards are available immediately in Flashcards.
 
 When editing `src/content.ts`, append new entries to the end of the relevant list. IDs currently use each entry’s position, so do not reorder or remove existing entries. Changes to existing card wording do not overwrite saved cards; edit them in the app or add an explicit migration if needed.
 
@@ -86,7 +86,7 @@ Vite's relative base and the manifest's relative scope/start URL support a repos
 
 - `src/content.ts`: original lesson wording and starter cards
 - `src/store.ts`: IndexedDB, validated backups, FSRS and daily queue
-- `src/main.tsx`: Learn, Review, Progress, audio and editing
+- `src/main.tsx`: Learn, Flashcards, Progress, audio and editing
 - `src/style.css`: responsive layout using system fonts (no network font dependency)
 - `vite.config.ts`: install manifest and offline cache
 - `src/store.test.ts`, `e2e/app.spec.ts`: unit and browser checks

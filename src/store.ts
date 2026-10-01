@@ -100,18 +100,15 @@ export function newToday(data: AppData, now: Date) {
   ).length;
 }
 export function queue(data: AppData, now: Date) {
-  const unlocked = data.cards.filter(
-    (c) => c.lessonId === "custom" || data.completed.includes(c.lessonId),
-  );
-  const due = unlocked
+  // Scheduling is a suggestion, never an access gate.
+  const due = data.cards
     .filter((c) => c.schedule.reps > 0 && c.schedule.due <= now)
     .sort((a, b) => +a.schedule.due - +b.schedule.due);
-  return [
-    ...due,
-    ...unlocked
-      .filter((c) => c.schedule.reps === 0)
-      .slice(0, Math.max(0, data.settings.newLimit - newToday(data, now))),
-  ];
+  const fresh = data.cards.filter((c) => c.schedule.reps === 0);
+  const upcoming = data.cards
+    .filter((c) => c.schedule.reps > 0 && c.schedule.due > now)
+    .sort((a, b) => +a.schedule.due - +b.schedule.due);
+  return [...due, ...fresh, ...upcoming];
 }
 export function review(
   data: AppData,

@@ -12,7 +12,7 @@ test("learn, review, edit, backup, restore, and study offline", async ({
   ).toBeVisible();
   await expect(
     page.getByRole("button", { name: /02 Add a little/ }),
-  ).toBeDisabled();
+  ).toBeEnabled();
   await page.getByRole("button", { name: "Start with Hangul" }).click();
   for (let i = 0; i < 6; i++)
     await page.getByRole("button", { name: "Next →", exact: true }).click();
@@ -23,7 +23,7 @@ test("learn, review, edit, backup, restore, and study offline", async ({
   await page.getByRole("button", { name: "아", exact: true }).click();
   await page.getByRole("button", { name: "Finish & practice" }).click();
   await expect(
-    page.getByRole("heading", { name: "Your daily practice." }),
+    page.getByRole("heading", { name: "Your flashcards." }),
   ).toBeVisible();
   await expect(
     page.getByText("a · open “ah” sound", { exact: true }),
@@ -53,13 +53,11 @@ test("learn, review, edit, backup, restore, and study offline", async ({
   const download = await downloadPromise;
   const path = await download.path();
   await page.getByLabel("New cards per day").selectOption("10");
-  await page
-    .locator("input[type=file]")
-    .setInputFiles({
-      name: "bad.json",
-      mimeType: "application/json",
-      buffer: Buffer.from("{}"),
-    });
+  await page.locator("input[type=file]").setInputFiles({
+    name: "bad.json",
+    mimeType: "application/json",
+    buffer: Buffer.from("{}"),
+  });
   await expect(page.getByText(/not a valid Haru Cards/)).toBeVisible();
   await expect(page.getByLabel("New cards per day")).toHaveValue("10");
   await page.locator("input[type=file]").setInputFiles(path!);
@@ -76,7 +74,9 @@ test("learn, review, edit, backup, restore, and study offline", async ({
     await page.reload();
     await context.setOffline(true);
     await page.reload();
-    await page.getByRole("button", { name: "Review", exact: false }).click();
+    await page
+      .getByRole("button", { name: "Flashcards", exact: false })
+      .click();
     await expect(
       page.getByRole("button", { name: "Reveal answer" }),
     ).toBeVisible();
@@ -106,4 +106,24 @@ test("home layout fits a small phone", async ({ page }) => {
     path: "test-results/home-small.png",
     fullPage: true,
   });
+});
+
+test("all paths and flashcards are open on first launch", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: /06 Words you can read/ }).click();
+  await expect(
+    page.getByRole("heading", { name: "Words you can read" }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Flashcards", exact: false }).click();
+  await page.getByLabel("Card collection").selectOption("words");
+  await expect(
+    page.getByRole("button", { name: "Reveal answer" }),
+  ).toBeVisible();
+  await expect(page.locator(".hangul")).toHaveText("나무");
+  await page.getByRole("button", { name: "Progress", exact: true }).click();
+  await page.getByLabel("New cards per day").selectOption("0");
+  await page.getByRole("button", { name: "Flashcards", exact: false }).click();
+  await expect(
+    page.getByRole("button", { name: "Reveal answer" }),
+  ).toBeVisible();
 });
